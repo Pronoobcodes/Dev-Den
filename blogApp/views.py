@@ -6,6 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Post, Category, Message, User
 from .forms import PostForm, CustomUserCreationForm, CustomUserUpdateForm
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.urls import reverse
+from django.views.decorators.http import require_POST
+from .models import PrivateMessage
 # Create your views here.
 
 
@@ -48,6 +53,36 @@ def login_view(request):
 
     context = {'page': page}
     return render(request, 'blogApp/login_register.html', context)
+
+
+@login_required(login_url='login')
+def private_messages_view(request, username):
+    other = get_object_or_404(User, username=username)
+    if request.user == other:
+        # show user's inbox
+        chat_messages = []
+        return render(request, 'blogApp/private_chat.html', {'other': other, 'chat_messages': chat_messages})
+
+    # load messages between request.user and other
+    chat_messages = PrivateMessage.objects.filter(
+        (Q(sender=request.user) & Q(recipient=other)) |
+        (Q(sender=other) & Q(recipient=request.user))
+    ).order_by('created')
+
+    return render(request, 'blogApp/private_chat.html', {'other': other, 'chat_messages': chat_messages})
+
+
+@login_required(login_url='login')
+@require_POST
+def send_private_message_view(request, username):
+    other = get_object_or_404(User, username=username)
+    body = request.POST.get('body', '').strip()
+    if body:
+        pm = PrivateMessage.objects.create(sender=request.user, recipient=other, body=body)
+        # If AJAX, return JSON
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'ok': True, 'id': pm.id, 'body': pm.body, 'sender': pm.sender.username, 'created': pm.created.isoformat()})
+    return redirect('private-messages', username=other.username)
 
 
 def logout_view(request):

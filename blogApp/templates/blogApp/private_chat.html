@@ -1,0 +1,39 @@
+{% extends "blogApp/main.html" %}
+
+{% block content %}
+<main class="layout ch layout--chat">
+  <div class="container sh container--chat">
+    <div class="chat-window">
+      <div class="chat-header">
+        <div>
+          <h2>Chat with @{{ other.username }}</h2>
+        </div>
+        <a href="{% url 'profile' other.id %}" class="btn">Back to profile</a>
+      </div>
+
+      <div id="chat-box" class="chat-box">
+        {% for m in chat_messages %}
+          <div class="chat-message {% if m.sender == request.user %}from-me{% else %}from-them{% endif %}">
+            <strong>{{ m.sender.username }}</strong>: {{ m.body }} <span class="time">{{ m.created|timesince }} ago</span>
+          </div>
+        {% empty %}
+          <p>No messages yet. Say hello!</p>
+        {% endfor %}
+      </div>
+
+      <form id="chat-form" action="{% url 'send-private-message' other.username %}" method="post" class="chat-input-form">
+        {% csrf_token %}
+        <input id="chat-input" name="body" placeholder="Write a message..." autocomplete="off" />
+        <button type="submit" class="btn btn--main">Send</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script src="/static/js/private_chat.js"></script>
+<script>
+  // initialize websocket after page load
+  window.__PRIVATE_CHAT_USERNAME = "{{ other.username }}";
+  window.__USERNAME = "{{ request.user.username|escapejs }}";
+</script>
+{% endblock content %}

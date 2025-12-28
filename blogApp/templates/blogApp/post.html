@@ -63,23 +63,31 @@
                 <h3>{{ post.title }}</h3>
                 <div class="room__info-meta">
                   <span>{{ post.created|timesince }} ago</span>
-                  <div class="vote-section">
+                  <div class="vote-section" title="Total votes: {{ post.upvotes.count|add:post.downvotes.count }}">
                     {% if request.user.is_authenticated %}
-                      <a href="{% url 'upvote-post' post.id %}" class="vote-btn upvote {% if request.user in post.upvotes.all %}active{% endif %}">
-                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                          <title>arrow-up</title>
-                          <path d="M16 1l-15 15h9v16h12v-16h9z"></path>
-                        </svg>
-                      </a>
+                      <div class="vote-column">
+                        <a href="{% url 'upvote-post' post.id %}" class="vote-btn upvote {% if request.user in post.upvotes.all %}active{% endif %}" title="Upvotes: {{ post.upvotes.count }}">
+                          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                            <title>arrow-up</title>
+                            <path d="M16 1l-15 15h9v16h12v-16h9z"></path>
+                          </svg>
+                        </a>
+                        <div class="vote-count-sub vote-count-up">{{ post.upvotes.count }}</div>
+                      </div>
                     {% endif %}
-                    <div class="vote-count">{{ post.vote_count }}</div>
+
+                    <div class="vote-count-net" title="Total number of votes">{{ post.upvotes.count|add:post.downvotes.count }}</div>
+
                     {% if request.user.is_authenticated %}
-                      <a href="{% url 'downvote-post' post.id %}" class="vote-btn downvote {% if request.user in post.downvotes.all %}active{% endif %}">
-                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                          <title>arrow-down</title>
-                          <path d="M16 31l15-15h-9v-16h-12v16h-9z"></path>
-                        </svg>
-                      </a>
+                      <div class="vote-column">
+                        <a href="{% url 'downvote-post' post.id %}" class="vote-btn downvote {% if request.user in post.downvotes.all %}active{% endif %}" title="Downvotes: {{ post.downvotes.count }}">
+                          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                            <title>arrow-down</title>
+                            <path d="M16 31l15-15h-9v-16h-12v16h-9z"></path>
+                          </svg>
+                        </a>
+                        <div class="vote-count-sub vote-count-down">{{ post.downvotes.count }}</div>
+                      </div>
                     {% endif %}
                   </div>
                 </div>

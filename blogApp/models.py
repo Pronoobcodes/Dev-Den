@@ -54,3 +54,17 @@ class Message(models.Model):
 
     def __str__(self):
         return self.body[0:50]
+
+
+class PrivateMessage(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='private_sent_messages')
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='private_received_messages')
+    body = models.TextField()
+    read = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created']
+
+    def __str__(self):
+        return f"{self.sender} -> {self.recipient}: {self.body[:40]}"
