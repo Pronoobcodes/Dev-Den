@@ -8,6 +8,9 @@
   const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
   const wsPath = `${protocol}://${window.location.host}/ws/pm/${username}/`;
   const socket = new WebSocket(wsPath);
+  const notificationSocket = new WebSocket(
+    `${protocol}://${window.location.host}/ws/notifications/`
+  );
 
   socket.onopen = function(){
     console.log('Private chat websocket opened', wsPath);
@@ -16,6 +19,7 @@
   socket.onmessage = function(e){
     try{
       const data = JSON.parse(e.data);
+      alert(`🔔 ${data.sender}: ${data.message}`);
       const div = document.createElement('div');
       const sender = data.sender;
       div.className = 'chat-message';
