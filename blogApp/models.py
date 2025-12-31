@@ -9,8 +9,8 @@ class User(AbstractUser):
     bio = models.TextField(null=True, blank=True)
     avatar = models.ImageField(null=True, default="images/avatar.svg", upload_to='images/')
 
-    # USERNAME_FIELD = 'email'
-    # REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
 class Category(models.Model):
     name = models.CharField(max_length=200)

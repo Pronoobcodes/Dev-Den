@@ -30,22 +30,16 @@ def login_view(request):
         return redirect('home')
 
     if request.method == 'POST':
-        username = request.POST.get('username').lower()
+        email = request.POST.get('email').lower()
         password = request.POST.get('password')
 
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            messages.error(request, 'Username does not exist')
-            return render(request, 'blogApp/login_register.html', {'page': page})
-        
-        user = authenticate(request, username=username, password=password)
-        
+        user = authenticate(request, email=email, password=password)
+
         if user is not None:
             login(request, user)
             return redirect('home')
         else:
-            messages.error(request, 'Password is incorrect')
+            messages.error(request, 'Invalid email or password')
 
     context = {'page': page}
     return render(request, 'blogApp/login_register.html', context)
