@@ -16,9 +16,9 @@ def register_view(request):
         form = CustomUserCreationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
-            user.username = user.username.lower()
+            user.email = user.email.lower()
             user.save()
-            login(request, user)
+            login(request, user, backend='blogApp.backends.EmailBackend')
             return redirect('home')
         messages.error(request, 'An error occured during registration')
     return render(request, 'blogApp/login_register.html', {'form':form})
@@ -36,7 +36,7 @@ def login_view(request):
         user = authenticate(request, email=email, password=password)
 
         if user is not None:
-            login(request, user)
+            login(request, user, backend='blogApp.backends.EmailBackend')
             return redirect('home')
         else:
             messages.error(request, 'Invalid email or password')
