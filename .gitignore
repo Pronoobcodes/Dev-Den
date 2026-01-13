@@ -42,6 +42,8 @@ db.sqlite3-journal
 /media
 /static
 .env
+/frontend/src/media/
+/frontend/src/aimodels/*.pt
 
 # IDE
 .vscode/
