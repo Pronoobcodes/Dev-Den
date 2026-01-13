@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from asgiref.sync import database_sync_to_async
+from channels.db import database_sync_to_async
 from django.contrib import messages
 from .models import Post, Category, Message, User, PrivateMessage
 from .forms import PostForm, CustomUserCreationForm, CustomUserUpdateForm
