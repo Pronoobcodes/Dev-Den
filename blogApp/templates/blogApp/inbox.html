@@ -1,0 +1,203 @@
+{% extends "blogApp/main.html" %}
+
+{% block content %}
+<main class="layout layout--inbox">
+  <div class="container container--inbox">
+    <div class="inbox-container">
+      <div class="conversations-panel">
+        <h2>Your Messages</h2>
+        <div class="conversations-list">
+          {% for conv in conversations %}
+            <a href="{% url 'private-messages' conv.user.username %}" class="conversation-item {% if conv.unread_count > 0 %}unread{% endif %}">
+              <div class="conversation-avatar">
+                {% if conv.user.avatar %}
+                  <img src="{{ conv.user.avatar.url }}" alt="{{ conv.user.username }}">
+                {% else %}
+                  <img src="/static/media/images/avatar.svg" alt="Default avatar">
+                {% endif %}
+              </div>
+              <div class="conversation-details">
+                <div class="conversation-header">
+                  <strong>{{ conv.user.username }}</strong>
+                  <span class="conversation-time">{{ conv.last_created|timesince }} ago</span>
+                </div>
+                <div class="conversation-last-message">
+                  {{ conv.last_message_body|truncatechars:50 }}
+                </div>
+                {% if conv.unread_count > 0 %}
+                  <span class="unread-badge">{{ conv.unread_count }}</span>
+                {% endif %}
+              </div>
+            </a>
+          {% empty %}
+            <p>No conversations yet. Start chatting!</p>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="chat-panel">
+        <p>Select a conversation to start chatting.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<style>
+/* ==============================
+=> Inbox Layout (MATCHES SITE)
+============================== */
+
+.layout--inbox {
+  margin-top: 2.4rem;
+}
+
+.container--inbox {
+  max-width: 120rem;
+  width: 90%;
+  margin: auto;
+}
+
+.inbox-container {
+  display: flex;
+  height: 85vh;
+  background: var(--color-dark);
+  border-radius: 0.7rem;
+  overflow: hidden;
+  border: 1px solid var(--color-dark-medium);
+}
+
+/* ==============================
+=> LEFT PANEL (Conversations)
+============================== */
+
+.conversations-panel {
+  width: 32%;
+  background: var(--color-dark);
+  border-right: 1px solid var(--color-dark-medium);
+  display: flex;
+  flex-direction: column;
+}
+
+.conversations-panel h2 {
+  padding: 1.6rem;
+  font-size: 1.6rem;
+  color: var(--color-light);
+  border-bottom: 1px solid var(--color-dark-medium);
+}
+
+/* scroll */
+.conversations-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* ==============================
+=> Conversation Item
+============================== */
+
+.conversation-item {
+  display: flex;
+  gap: 1.2rem;
+  padding: 1.4rem 1.6rem;
+  text-decoration: none;
+  color: var(--color-light);
+  border-bottom: 1px solid var(--color-dark-medium);
+  transition: all 0.2s ease;
+}
+
+.conversation-item:hover {
+  background: var(--color-dark-medium);
+}
+
+.conversation-item.unread {
+  background: rgba(52, 152, 219, 0.08);
+}
+
+/* avatar */
+.conversation-avatar img {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* content */
+.conversation-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.conversation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.conversation-header strong {
+  font-size: 1.4rem;
+  color: var(--color-light);
+}
+
+.conversation-time {
+  font-size: 1.2rem;
+  color: var(--color-gray);
+}
+
+/* last message */
+.conversation-last-message {
+  font-size: 1.3rem;
+  color: var(--color-light-gray);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* unread badge */
+.unread-badge {
+  background: var(--color-main);
+  color: var(--color-dark);
+  border-radius: 10rem;
+  padding: 0.2rem 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 0.3rem;
+  width: fit-content;
+}
+
+/* ==============================
+=> RIGHT PANEL (Chat Placeholder)
+============================== */
+
+.chat-panel {
+  flex: 1;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray);
+  font-size: 1.4rem;
+}
+
+/* ==============================
+=> RESPONSIVE
+============================== */
+
+@media screen and (max-width: 900px) {
+  .inbox-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .conversations-panel {
+    width: 100%;
+    height: 40vh;
+  }
+
+  .chat-panel {
+    height: 40vh;
+  }
+}
+</style>
+{% endblock content %}

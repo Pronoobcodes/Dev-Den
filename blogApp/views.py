@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
-from django.db.models import Q
+from django.db.models import Q, F, Case, When, Max, Sum
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from channels.db import database_sync_to_async
 from django.contrib import messages
-from .models import Post, Category, Message, User, PrivateMessage
+from .models import Post, Category, Message, User
+from chat.models import PrivateMessage
 from .forms import PostForm, CustomUserCreationForm, CustomUserUpdateForm
 from django.views.decorators.http import require_POST
 # Create your views here.
@@ -18,7 +19,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.email = user.email.lower()
-            user.save()
+            user. save()
             login(request, user, backend='blogApp.backends.EmailBackend')
             return redirect('home')
         messages.error(request, 'An error occured during registration')
@@ -67,7 +68,7 @@ def home_view(request):
 
 
 def post_view(request, pk):
-    post = Post.objects.get(id=pk)
+    post = get_object_or_404(Post, id=pk)
     post_messages = post.message_set.all()
     participants = post.participants.all()
     if request.method == 'POST':
@@ -84,7 +85,7 @@ def post_view(request, pk):
 
 
 def profile_view(request, pk):
-    user = User.objects.get(id=pk)
+    user = get_object_or_404(User, id=pk)
     posts = user.post_set.all()
     post_messages = user.message_set.all()
     categories =  Category.objects.all()
@@ -113,7 +114,7 @@ def create_post_view(request):
 
 @login_required(login_url='login')
 def update_post_view(request, pk):
-    post = Post.objects.get(id=pk)
+    post = get_object_or_404(Post, id=pk)
     form = PostForm(instance=post)
     categories = Category.objects.all()
 
@@ -134,7 +135,7 @@ def update_post_view(request, pk):
 
 @login_required(login_url='login')
 def delete_post_view(request, pk):
-    post = Post.objects.get(id=pk)
+    post = get_object_or_404(Post, id=pk)
     if request.user != post.created_by:
         return HttpResponse('You are not allowed')
     if request.method == 'POST':
@@ -145,7 +146,7 @@ def delete_post_view(request, pk):
 
 @login_required(login_url='login')
 def update_message_view(request, pk):
-    message = Message.objects.get(id=pk)
+    message = get_object_or_404(Message, id=pk)
 
     if request.user != message.user:
         return HttpResponse('You are not allowed')
@@ -171,7 +172,7 @@ def update_message_view(request, pk):
 
 @login_required(login_url='login')
 def delete_message_view(request, pk):
-    message = Message.objects.get(id=pk)
+    message = get_object_or_404(Message, id=pk)
     if request.user != message.user:
         return HttpResponse('You are not allowed')
     if request.method == 'POST':
@@ -208,7 +209,7 @@ def activity_page_view(request):
 
 @login_required(login_url='login')
 def upvote_post_view(request, pk):
-    post = Post.objects.get(id=pk)
+    post = get_object_or_404(Post, id=pk)
     
     # If user already downvoted, remove downvote
     if request.user in post.downvotes.all():
@@ -225,7 +226,7 @@ def upvote_post_view(request, pk):
 
 @login_required(login_url='login')
 def downvote_post_view(request, pk):
-    post = Post.objects.get(id=pk)
+    post = get_object_or_404(Post, id=pk)
     
     # If user already upvoted, remove upvote
     if request.user in post.upvotes.all():
@@ -241,7 +242,6 @@ def downvote_post_view(request, pk):
 
 
 @login_required(login_url='login')
-@database_sync_to_async
 def private_messages_view(request, username):
     other = get_object_or_404(User, username=username)
     if request.user == other:
@@ -255,12 +255,14 @@ def private_messages_view(request, username):
         (Q(sender=other) & Q(recipient=request.user))
     ).order_by('created')
 
+    # Mark messages as read
+    PrivateMessage.objects.filter(recipient=request.user, sender=other, read=False).update(read=True)
+
     return render(request, 'blogApp/private_chat.html', {'other': other, 'chat_messages': chat_messages})
 
 
 @login_required(login_url='login')
 @require_POST
-@database_sync_to_async
 def send_private_message_view(request, username):
     other = get_object_or_404(User, username=username)
     body = request.POST.get('body', '').strip()
@@ -271,3 +273,43 @@ def send_private_message_view(request, username):
             return JsonResponse({'ok': True, 'id': pm.id, 'body': pm.body, 'sender': pm.sender.username, 'created': pm.created.isoformat()})
     return redirect('private-messages', username=other.username)
 
+
+@login_required(login_url='login')
+def inbox(request):
+    # Get all conversations grouped by other user
+    conversations = PrivateMessage.objects.filter(
+        Q(sender=request.user) | Q(recipient=request.user)
+    ).annotate(
+        other_user_id=Case(
+            When(sender=request.user, then=F('recipient_id')),
+            default=F('sender_id')
+        )
+    ).values('other_user_id').annotate(
+        last_created=Max('created'),
+        unread_count=Sum(Case(When(recipient=request.user, read=False, then=1), default=0))
+    ).order_by('-last_created')
+
+    # Convert to list to work with
+    conversations_list = list(conversations)
+
+    # Get last messages and users in batch
+    other_user_ids = [c['other_user_id'] for c in conversations_list]
+    users = {u.id: u for u in User.objects.filter(id__in=other_user_ids)}
+    
+    # Get last messages for all conversations
+    last_messages = {}
+    for other_user_id in other_user_ids:
+        last_msg = PrivateMessage.objects.filter(
+            (Q(sender=request.user, recipient_id=other_user_id) | 
+             Q(sender_id=other_user_id, recipient=request.user))
+        ).order_by('-created').values('body').first()
+        last_messages[other_user_id] = last_msg['body'] if last_msg else ''
+
+    # Add user and last message to conversations
+    for conv in conversations_list:
+        other_id = conv['other_user_id']
+        conv['user'] = users.get(other_id)
+        conv['last_message_body'] = last_messages.get(other_id, '')
+
+    context = {'conversations': conversations_list}
+    return render(request, 'blogApp/inbox.html', context)

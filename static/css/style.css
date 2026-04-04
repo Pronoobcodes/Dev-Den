@@ -1,17 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
 
 :root {
-  --color-main: #3498db; /* Changed from #71c6dd to a more vibrant blue */
-  --color-main-light: #e1f0fa; /* Lighter blue */
-  --color-dark: #2c3e50; /* Darker blue-gray */
-  --color-dark-medium: #34495e; /* Medium blue-gray */
-  --color-dark-light: #4a6b8a; /* Light blue-gray */
-  --color-light: #ecf0f1; /* Very light blue-gray */
-  --color-gray: #95a5a6; /* Blue-tinted gray */
-  --color-light-gray: #bdc3c7; /* Lighter blue-tinted gray */
-  --color-bg: #1a2a3a; /* Dark blue background */
-  --color-success: #2ecc71; /* Keep success green */
-  --color-error: #e74c3c; /* Keep error red */
+  --color-main: #3498db;
+  --color-main-light: #e1f0fa;
+  --color-dark: #2c3e50;
+  --color-dark-medium: #34495e;
+  --color-dark-light: #4a6b8a;
+  --color-light: #ecf0f1;
+  --color-gray: #95a5a6;
+  --color-light-gray: #bdc3c7;
+  --color-bg: #1a2a3a;
+  --color-success: #2ecc71;
+  --color-error: #e74c3c;
 }
 
 /*========== base styles ==========*/
@@ -23,7 +23,6 @@
   padding: 0;
   box-sizing: border-box;
   text-rendering: optimizeLegibility;
-  /* color: inherit; */
   font-size: inherit;
 }
 
@@ -108,7 +107,7 @@ a {
   color: var(--color-light);
 }
 
-.btn > svg {
+.btn>svg {
   fill: currentColor;
   width: 1.6rem;
   height: 1.6rem;
@@ -236,7 +235,7 @@ a {
   background-color: var(--color-dark-medium);
 }
 
-.dropdown-menu > a:not(:last-child) {
+.dropdown-menu>a:not(:last-child) {
   border-bottom: 1px solid var(--color-dark-medium);
 }
 
@@ -270,7 +269,7 @@ a {
   background-color: var(--color-dark);
 }
 
-.header > .container {
+.header>.container {
   display: flex;
   gap: 9.5rem;
 }
@@ -282,18 +281,18 @@ a {
   align-items: center;
 }
 
-.header__logo > img {
+.header__logo>img {
   height: 3.2rem;
   width: 3.2rem;
 }
 
-.header__logo > h1 {
+.header__logo>h1 {
   font-weight: 700;
   font-size: 2rem;
   color: var(--color-light);
 }
 
-.header__search > label {
+.header__search>label {
   background-color: var(--color-dark-medium);
   padding: 1.3rem 1rem;
   display: flex;
@@ -322,7 +321,7 @@ a {
     width: 20rem;
   }
 
-  .header > .container {
+  .header>.container {
     gap: 3rem;
   }
 }
@@ -393,38 +392,39 @@ a {
   margin-top: 2.4rem;
 }
 
-.layout > .container {
+.layout>.container {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
-.ch > .sh{
+.ch>.sh {
   display: block;
   justify-content: space-between;
   align-items: flex-start;
 }
 
-.layout--3 > .container > div:first-child {
+.layout--3>.container>div:first-child {
   flex-basis: 18%;
   max-width: 22.5rem;
 }
 
-.layout--3 > .container > div:nth-child(2) {
+.layout--3>.container>div:nth-child(2) {
   flex-basis: 50%;
 }
 
-.layout--3 > .container > div:last-child {
+.layout--3>.container>div:last-child {
   flex-basis: 25%;
 }
 
-.layout--2 > .container > div:first-child {
+.layout--2>.container>div:first-child {
   flex-basis: 72%;
 }
 
-.layout--2 > .container > div:last-child {
+.layout--2>.container>div:last-child {
   flex-basis: 25%;
 }
+
 /*========== Layout Box ==========*/
 
 .layout__box {
@@ -470,12 +470,13 @@ a {
 }
 
 @media screen and (max-width: 900px) {
+
   .activities,
   .topics {
     display: none;
   }
 
-  .layout--3 > .container > div:nth-child(2) {
+  .layout--3>.container>div:nth-child(2) {
     flex-basis: 100%;
   }
 }
@@ -559,7 +560,7 @@ a {
 }
 
 /*==============================
-=>  Topics
+=>  Topics List
 ================================*/
 
 .topics__header {
@@ -663,7 +664,7 @@ a {
   font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Reduced gap */
+  gap: 0.5rem;
 }
 
 .roomListRoom__actions {
@@ -680,7 +681,6 @@ a {
 
 .roomListRoom__actions svg {
   fill: var(--color-main);
-
   width: 1.6rem;
   height: 1.6rem;
 }
@@ -772,9 +772,6 @@ a {
 
 .activities__boxContent {
   margin-left: 4.2rem;
-}
-
-.activities__boxContent {
   font-size: 1.4rem;
 }
 
@@ -829,6 +826,7 @@ a {
   font-weight: 500;
   font-size: 1.8rem;
 }
+
 .auth .layout__boxHeader {
   text-align: center;
   justify-content: center;
@@ -858,6 +856,7 @@ a {
 /*==============================
 =>  Profile
 ================================*/
+
 .profile {
   margin-bottom: 3rem;
 }
@@ -901,13 +900,55 @@ a {
 }
 
 /*==============================
-=>  Room
+=>  Room  ←  ALL LAYOUT FIXES
 ================================*/
 
-.room,
+/*
+  WHAT CHANGED vs. original:
+
+  .room
+    REMOVED  max-height: 87.5vh   — was the hard ceiling that clipped everything
+    REMOVED  overflow: hidden      — was hiding any content past that ceiling
+    ADDED    display: flex / flex-direction: column
+
+  .room__box
+    REMOVED  height: 80.5vh        — fixed viewport height, content overflowed it
+    ADDED    display: flex / flex-direction: column
+
+  .room__header
+    REMOVED  position: absolute    — took header out of normal flow → overlap
+    REMOVED  z-index: 999          — was only needed due to the absolute position
+    REMOVED  top: 4.4rem           — offset that went with position: absolute
+    REMOVED  width: 95%            — compensation hack for absolute positioning
+    REMOVED  overflow-y: auto      — was creating a nested scroll container
+
+  .room__conversation
+    REMOVED  height: 40%           — was 40% of the old fixed 80.5vh, always wrong
+
+  .threads
+    REMOVED  overflow-y: auto      — nested scroll container (conflict)
+    REMOVED  height: 100%          — was trapping content in a fixed-size box
+    REMOVED  margin-top: 28vh      — brittle magic-number hack to dodge abs header
+
+  .room__message
+    KEPT     position: absolute    — correct; pins input bar to bottom of .room
+    ADDED    background: solid     — prevents text bleeding through the input bar
+*/
+
+.room {
+  background: var(--color-dark);
+  border-radius: 0.7rem;
+  position: relative;
+  /* needed so .room__message pins correctly */
+  display: flex;
+  flex-direction: column;
+  /* NO max-height, NO overflow:hidden */
+}
+
 .participants {
   background: var(--color-dark);
   max-height: 87.5vh;
+  /* sidebar intentionally fixed — unrelated to bug */
   border-radius: 0.7rem;
   overflow: hidden;
   position: relative;
@@ -918,7 +959,7 @@ a {
     display: none;
   }
 
-  .layout--2 > .container > div:first-child {
+  .layout--2>.container>div:first-child {
     flex-basis: 100%;
   }
 }
@@ -969,38 +1010,36 @@ a {
   fill: var(--color-main-light);
 }
 
+/* ── FIXED: back in normal document flow ── */
 .room__header {
-  overflow-y: auto;
-  position: absolute;
-  width: 95%;
-  background: var(--color-dark);
-  z-index: 999;
-  top: 4.4rem;
   padding-top: 2rem;
   padding-bottom: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  background: var(--color-dark);
+  /* position, z-index, top, width, overflow-y: ALL REMOVED */
 }
 
 @media screen and (max-width: 500px) {
   .room__header {
-    top: 4.3rem;
     padding-right: 2rem;
   }
 }
 
+/* ── FIXED: no fixed height ── */
 .room__box {
   padding-left: 2rem;
   padding-right: 2rem;
-  height: 80.5vh;
-  /* overflow-y: auto; */
   padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  /* height: 80.5vh — REMOVED */
 }
 
 @media screen and (max-width: 500px) {
   .room__box {
     padding-left: 2.5rem;
     padding-right: 2rem;
-    height: 80.5vh;
-    overflow-y: auto;
     padding-bottom: 0;
   }
 }
@@ -1014,6 +1053,10 @@ a {
   font-size: 2.4rem;
   font-weight: 500;
   color: var(--color-main);
+}
+
+.room__info-meta {
+  display: flex;
 }
 
 .room__hosted p {
@@ -1046,25 +1089,28 @@ a {
   margin: 1rem 0;
 }
 
+/* ── FIXED: no percentage height ── */
 .room__conversation {
   margin-top: 1rem;
-  margin-bottom: 6rem;
-  height: 40%;
+  margin-bottom: 8rem;
+  /* keeps last comment clear of the pinned input bar */
+  /* height: 40% — REMOVED */
+}
+
+/* ── FIXED: single natural scroll via the page body ── */
+.threads {
+  background: var(--color-bg);
+  border-radius: 0.7rem;
+  padding: 0 2rem 4rem 2rem;
+  /* overflow-y: auto  — REMOVED (was nested scroll)     */
+  /* height: 100%      — REMOVED (was trapping content)  */
+  /* margin-top: 28vh  — REMOVED (was a brittle hack)    */
 }
 
 .threads h3 {
   text-transform: uppercase;
   font-weight: 500;
   color: var(--color-gray);
-}
-
-.threads {
-  background: var(--color-bg);
-  border-radius: 0.7rem;
-  overflow-y: auto;
-  height: 100%;
-  margin-top: 28vh;
-  padding: 0 2rem 4rem 2rem;
 }
 
 .thread {
@@ -1102,6 +1148,7 @@ a {
   margin-top: 0.5rem;
 }
 
+/* ── KEPT as-is: position:absolute correctly pins to .room ── */
 .room__message {
   padding: 2rem;
   position: absolute;
@@ -1109,10 +1156,11 @@ a {
   bottom: 0;
   left: 0;
   right: 0;
-  background: transparent;
+  background: var(--color-dark);
+  /* solid bg: prevents text bleeding through */
 }
 
-.room__message > form > input {
+.room__message>form>input {
   resize: none;
   background-color: var(--color-dark-light);
   color: var(--color-light);
@@ -1128,7 +1176,7 @@ a {
   position: relative;
 }
 
-.room__message > form > input::placeholder {
+.room__message>form>input::placeholder {
   color: var(--color-light-gray);
 }
 
@@ -1194,7 +1242,10 @@ a {
   color: var(--color-light-gray);
 }
 
-/* Voting styles - smaller and more integrated */
+/*==============================
+=>  Voting
+================================*/
+
 .vote-section {
   display: flex;
   align-items: center;
@@ -1216,8 +1267,13 @@ a {
   margin-top: 2px;
 }
 
-.vote-count-up { color: var(--color-success); }
-.vote-count-down { color: var(--color-error); }
+.vote-count-up {
+  color: var(--color-success);
+}
+
+.vote-count-down {
+  color: var(--color-error);
+}
 
 .vote-count-net {
   font-size: 1rem;
@@ -1256,7 +1312,6 @@ a {
   fill: var(--color-error);
 }
 
-/* Add hover state colors */
 .vote-btn.upvote:hover svg {
   fill: var(--color-success);
 }
@@ -1265,12 +1320,10 @@ a {
   fill: var(--color-error);
 }
 
-.room__info-meta {
-  display: flex;
+/*==============================
+=>  Private Chat
+================================*/
 
-}
-
-/* Private chat styles */
 .layout--chat {
   display: flex;
   height: 100vh;
@@ -1350,7 +1403,7 @@ a {
 }
 
 .chat-message.from-me {
-  background: rgba(0,150,136,0.12);
+  background: rgba(0, 150, 136, 0.12);
   margin-left: auto;
   border-bottom-right-radius: 4px;
   border-bottom-left-radius: 14px;
@@ -1358,7 +1411,7 @@ a {
 }
 
 .chat-message.from-them {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
   margin-right: auto;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 14px;
@@ -1372,5 +1425,3 @@ a {
   margin-top: 6px;
   opacity: 0.9;
 }
-
-
