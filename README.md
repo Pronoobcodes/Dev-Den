@@ -1,11 +1,11 @@
 # Blog Platform with Real-Time Chat
 
-A Django-based blog platform with user authentication, posts, voting system, and real-time private messaging using WebSockets.
+A Django-based blog platform with user authentication, posts, a voting system, and real-time private messaging using WebSockets.
 
 ## Features
 
 - 👥 **User Accounts** - Registration, login, and profile management with avatars
-- 📝 **Posts & Comments** - Create, edit, delete posts with category organization
+- 📝 **Posts & Comments** - Create, edit, and delete posts with category organization
 - 👍 **Voting System** - Upvote and downvote posts with separate vote tracking
 - 💬 **Real-Time Chat** - Private messages between users using WebSockets
 - 🏷️ **Categories** - Organize posts by topics
@@ -16,8 +16,8 @@ A Django-based blog platform with user authentication, posts, voting system, and
 
 - **Backend**: Django 5.2
 - **WebSocket**: Django Channels 4.3 + Daphne ASGI
-- **Database**: SQLite (development) / PostgreSQL (production)
-- **Frontend**: HTML, CSS, Vanilla JavaScript
+- **Database**: SQLite
+- **Frontend**: HTML, CSS, JavaScript
 - **Media**: Pillow for image handling
 
 ## Installation
@@ -30,7 +30,7 @@ A Django-based blog platform with user authentication, posts, voting system, and
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Pronoobcodes/Blog2.git
+   git clone https://github.com/Pronoobcodes/Dev-Den.git
    cd Blog2
    ```
 
@@ -172,4 +172,4 @@ This project is open source and available under the MIT License.
 
 ## Support
 
-For issues or questions, please open an issue on GitHub or contact the maintainers.
+For issues or questions, please open an issue on GitHub
