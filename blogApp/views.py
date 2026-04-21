@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
-from django.db.models import Q, F, Case, When, Max, Sum
+from django.db.models import Q
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from channels.db import database_sync_to_async
 from django.contrib import messages
 from .models import Post, Category, Message, User
 from chat.models import PrivateMessage
@@ -274,42 +273,30 @@ def send_private_message_view(request, username):
     return redirect('private-messages', username=other.username)
 
 
+# views.py
+
 @login_required(login_url='login')
 def inbox(request):
-    # Get all conversations grouped by other user
-    conversations = PrivateMessage.objects.filter(
-        Q(sender=request.user) | Q(recipient=request.user)
-    ).annotate(
-        other_user_id=Case(
-            When(sender=request.user, then=F('recipient_id')),
-            default=F('sender_id')
-        )
-    ).values('other_user_id').annotate(
-        last_created=Max('created'),
-        unread_count=Sum(Case(When(recipient=request.user, read=False, then=1), default=0))
-    ).order_by('-last_created')
-
-    # Convert to list to work with
-    conversations_list = list(conversations)
-
-    # Get last messages and users in batch
-    other_user_ids = [c['other_user_id'] for c in conversations_list]
-    users = {u.id: u for u in User.objects.filter(id__in=other_user_ids)}
+    user = request.user
     
-    # Get last messages for all conversations
-    last_messages = {}
-    for other_user_id in other_user_ids:
+    contacts = User.objects.filter(
+        Q(private_sent_messages__recipient=user) | Q(private_received_messages__sender=user)
+    ).distinct()
+    
+    conversations = []
+    for contact in contacts:
         last_msg = PrivateMessage.objects.filter(
-            (Q(sender=request.user, recipient_id=other_user_id) | 
-             Q(sender_id=other_user_id, recipient=request.user))
-        ).order_by('-created').values('body').first()
-        last_messages[other_user_id] = last_msg['body'] if last_msg else ''
-
-    # Add user and last message to conversations
-    for conv in conversations_list:
-        other_id = conv['other_user_id']
-        conv['user'] = users.get(other_id)
-        conv['last_message_body'] = last_messages.get(other_id, '')
-
-    context = {'conversations': conversations_list}
-    return render(request, 'blogApp/inbox.html', context)
+            Q(sender=user, recipient=contact) |
+            Q(sender=contact, recipient=user)
+        ).order_by('-created').first()
+        
+        if last_msg:
+            conversations.append({
+                'user': contact,
+                'last_message': last_msg.body,
+                'last_time': last_msg.created,
+            })
+    
+    conversations.sort(key=lambda x: x['last_time'], reverse=True)
+    
+    return render(request, 'blogApp/inbox.html', {'conversations': conversations})
