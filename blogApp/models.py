@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.templatetags.static import static
 
 
 class User(AbstractUser):
@@ -11,6 +12,13 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
+
+    @property
+    def avatar_url(self):
+        if self.avatar and str(self.avatar) != "static/media/images/avatar.svg":
+            return self.avatar.url
+        else:
+            return static('media/images/avatar.svg')
 
 class Category(models.Model):
     name = models.CharField(max_length=200)

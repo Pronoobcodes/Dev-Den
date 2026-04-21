@@ -8,7 +8,7 @@
     {% for conv in conversations %}
       <a href="{% url 'private-messages' conv.user.username %}" class="conv-row">
         <div class="conv-avatar">
-          <img src="{{ conv.user.avatar.url }}" alt="{{ conv.user.username }}">
+          <img src="{{ conv.user.avatar_url }}" alt="{{ conv.user.username }}">
         </div>
         <div class="conv-body">
           <span class="conv-name">{{ conv.user.username }}</span>

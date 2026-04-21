@@ -96,7 +96,7 @@
                 <p>Hosted By</p>
                 <a href="{% url "profile" post.created_by.id %}" class="room__author">
                   <div class="avatar avatar--small">
-                    <img src="{{ post.created_by.avatar.url }}" />
+                    <img src="{{ post.created_by.avatar_url }}" />
                   </div>
                   <span>@{{ post.created_by.username }}</span>
                 </a>
@@ -114,7 +114,7 @@
                     <div class="thread__author">
                       <a href="{% url "profile" post_message.user.id %}" class="thread__authorInfo">
                         <div class="avatar avatar--small">
-                          <img src="{{ post_message.user.avatar.url }}" />
+                          <img src="{{ post_message.user.avatar_url }}" />
                         </div>
                         <span>@{{ post_message.user }}</span>
                       </a>
@@ -189,7 +189,7 @@
             {% for peep in participants %}
             <a href="{% url "profile" peep.id %}" class="participant">
               <div class="avatar avatar--medium">
-                <img src="{{ peep.avatar.url }}" />
+                <img src="{{ peep.avatar_url }}" />
               </div>
               <p>
                 {{ peep.fullname }}

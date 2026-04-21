@@ -3,7 +3,7 @@
             <div class="roomListRoom__header">
               <a href="{% url "profile" post.created_by.id %}" class="roomListRoom__author">
                 <div class="avatar avatar--small">
-                  <img src="{{  post.created_by.avatar.url }}" />
+                  <img src="{{  post.created_by.avatar_url }}" />
                 </div>
                 <span>@{{ post.created_by.username }}</span>
               </a>
